@@ -34,9 +34,21 @@ public class UsersController: BaseApiController
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] CreateUserCommand command)
     {
-
-        return command == null
-            ? UnprocessableEntity()
-            : CreatedResponse(await _mediator.Send(command));
+        return CreatedResponse(await _mediator.Send(command));
     }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Put([FromRoute]Guid id, [FromBody] UpdateUserCommand command)
+    {
+        command.Id = id;
+        return CreatedResponse(await _mediator.Send(command));
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var request = new DeleteUserCommand() { Id = id };
+        return OkResponse(await _mediator.Send(request));
+    }
+
 }

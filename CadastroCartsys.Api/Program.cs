@@ -3,6 +3,8 @@ using CadastroCartsys.Data;
 using CadastroCartsys.Data.Repositories;
 using CadastroCartsys.Domain.Users;
 using CadastroCartsys.Domain.Users.Commands.Handlers;
+using CadastroCartsys.Domain.Users.Validators;
+using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,8 +19,14 @@ builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IMediator, Mediator>();
 builder.Services.AddMediatR(config =>
 {
-    config.RegisterServicesFromAssemblyContaining<CreateUserCommandHandler>();
+    config.RegisterServicesFromAssemblyContaining<UserCommandHandler>();
 });
+
+builder.Services.AddControllers().AddFluentValidation(fv =>
+        fv.RegisterValidatorsFromAssemblyContaining<CreateUserCommandValidator>());
+
+builder.Services.AddControllers().AddFluentValidation(fv =>
+    fv.RegisterValidatorsFromAssemblyContaining<UpdateUserCommandValidator>());
 
 
 builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(

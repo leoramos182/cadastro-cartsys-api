@@ -27,4 +27,34 @@ public class BaseRepository<T, TId> : IBaseRepository<T, TId>
 
         throw new DomainException(DefaultMessages.DatabaseError);
     }
+
+    public T Modify(T entity)
+    {
+        _dbContext.Set<T>().Update(entity);
+
+        if (SaveChanges()) return entity;
+
+        throw new DomainException(DefaultMessages.DatabaseError);
+    }
+
+    public T Remove(T entity)
+    {
+        _dbContext.Set<T>().Remove(entity);
+
+        if (SaveChanges()) return entity;
+
+        throw new DomainException(DefaultMessages.DatabaseError);
+    }
+
+    public bool SaveChanges()
+    {
+        try
+        {
+            return _dbContext.SaveChanges() > 0;
+        }
+        catch
+        {
+            throw new DomainException(DefaultMessages.DatabaseError);
+        }
+    }
 }
