@@ -9,3 +9,4 @@
 * Setup do banco de dados, migrations, seed user e organização pro projeto ddd
 * Criado entidades, repositorios de suporte
 * Criação do repositorio e controller da entidade user
+* Finalizado CRUD para a entidade User
