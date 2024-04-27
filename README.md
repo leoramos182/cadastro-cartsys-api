@@ -2,8 +2,9 @@
 
 ## Sobre a aplicação
 * Aplicação web utilizando Dotnet Core 8 MVC usando conceitos de DDD e padrão CQRS no Backend
+* Mediator
+* Fluent Validator
 * Banco de dados Sqlserver
-* Angular no frontend
 
 ## Avanço da aplicação
 * Setup do banco de dados, migrations, seed user e organização pro projeto ddd
