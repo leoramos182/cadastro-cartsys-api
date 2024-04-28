@@ -11,6 +11,7 @@
 * Criado entidades, repositorios de suporte
 * Criação do repositorio e controller da entidade user
 * Finalizado CRUD para a entidade User
+* Aplicado Jwt no projeto para pagina de login
 
 ## Informações para rodar o projeto
 * string de conexao no appsettings.json
