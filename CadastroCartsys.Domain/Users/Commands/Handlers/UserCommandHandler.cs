@@ -1,5 +1,7 @@
 ﻿using CadastroCartsys.Crosscutting.Exceptions;
 using CadastroCartsys.Crosscutting.Messages;
+using CadastroCartsys.Crosscutting.Notifications;
+using CadastroCartsys.Crosscutting.Results;
 using CadastroCartsys.Crosscutting.Utils;
 using CadastroCartsys.Domain.Entities;
 using CadastroCartsys.Domain.Projections;
@@ -23,8 +25,7 @@ public class UserCommandHandler: IRequestHandler<CreateUserCommand, UserVm>,
     {
         var user = await _usersRepository.FindByEmailAsync(request.Email);
 
-        if (user != null)
-            throw new DomainException(UserMessages.Email.EmailInUse);
+        if (user != null) throw new Exception(UserMessages.Email.EmailInUse);
 
         var hashedPassword = PasswordUtils.Hash(request.Password);
 
@@ -44,9 +45,7 @@ public class UserCommandHandler: IRequestHandler<CreateUserCommand, UserVm>,
         if (user == null)
             throw new DomainException(UserMessages.NotFound);
 
-        var hashedPassword = PasswordUtils.Hash(request.Password.Trim());
-
-        user.Update(request.Name.Trim(), hashedPassword, request.Email);
+        user.Update(request.Name.Trim(), request.Email);
 
         user = _usersRepository.Modify(user);
 

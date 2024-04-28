@@ -20,9 +20,5 @@ public class UpdateUserCommandValidator: AbstractValidator<UpdateUserCommand>
         RuleFor(x => x.Name)
             .NotEmpty()
             .WithMessage(UserMessages.Name.EmptyName);
-
-        RuleFor(x => x.Password)
-            .NotEmpty()
-            .WithMessage(UserMessages.Password.EmptyPassword);
     }
 }

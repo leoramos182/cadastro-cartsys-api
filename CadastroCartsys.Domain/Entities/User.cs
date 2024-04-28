@@ -31,15 +31,19 @@ public class User: IBaseEntity, IAggregateRoot<Guid>
         return other is User user && Id == user.Id;
     }
 
-    public void Update(string? name, string? password, string? email)
+    public void Update(string? name, string? email)
     {
         Name = name ?? Name;
-        Password = password ?? Password;
         Email = email ?? Email;
     }
 
     public void Delete()
     {
         Deleted = true;
+    }
+
+    public void ActivateDeactivate()
+    {
+        Active = !Active;
     }
 }

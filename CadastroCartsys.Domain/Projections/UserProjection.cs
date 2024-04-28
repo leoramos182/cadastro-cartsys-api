@@ -7,6 +7,7 @@ public static class UserProjection
 {
     public static IQueryable<UserVm> ToVm(this IQueryable<User> query) => query.Select(user => new UserVm
     {
+        Id = user.Id,
         Name = user.Name,
         Email = user.Email,
         Active = user.Active,

@@ -1,6 +1,7 @@
 ﻿using CadastroCartsys.Domain.Projections;
 using CadastroCartsys.Domain.Users;
 using CadastroCartsys.Domain.Users.Commands;
+using CadastroCartsys.Domain.Users.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,6 @@ namespace CadastroCartsys.Api.Controllers;
 
 [Route("api/users")]
 [ApiController]
-[Authorize]
 public class UsersController: BaseApiController
 {
     private readonly IMediator _mediator;
@@ -33,6 +33,20 @@ public class UsersController: BaseApiController
             : OkResponse(user.ToVm()));
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var user = await _userRepository.GetAllUsers();
+        return await Task.FromResult(OkResponse(user.ToVm()));
+    }
+
+    [HttpGet("search")]
+    public async Task<IActionResult> Search([FromQuery] SearchUsersQuery query)
+    {
+        var users = await _userRepository.Filter(query);
+        return await Task.FromResult(OkResponse(users.ToVm()));
+    }
+
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] CreateUserCommand command)
     {
@@ -53,4 +67,15 @@ public class UsersController: BaseApiController
         return OkResponse(await _mediator.Send(request));
     }
 
+    [HttpPatch("{id:guid}/change-status")]
+    public async Task<IActionResult> ChangeStatus(Guid id)
+    {
+        var user = await _userRepository.GetUser(id);
+        if (user == null) return NotFoundResponse();
+        user.ActivateDeactivate();
+        user = _userRepository.Modify(user);
+
+        return OkResponse(user.ToVm());
+
+    }
 }
