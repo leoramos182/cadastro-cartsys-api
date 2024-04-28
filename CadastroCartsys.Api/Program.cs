@@ -1,11 +1,17 @@
+using System.Security.Claims;
 using CadastroCartsys.Api;
+using CadastroCartsys.Crosscutting.Config;
 using CadastroCartsys.Data;
 using CadastroCartsys.Data.Repositories;
+using CadastroCartsys.Domain.Contracts;
 using CadastroCartsys.Domain.Users;
 using CadastroCartsys.Domain.Users.Commands.Handlers;
 using CadastroCartsys.Domain.Users.Validators;
+using CadastroCartsys.Infra.Services;
 using FluentValidation.AspNetCore;
+using Jwks.Manager.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +27,11 @@ builder.Services.AddMediatR(config =>
 {
     config.RegisterServicesFromAssemblyContaining<UserCommandHandler>();
 });
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+var jwTokenConfig = new JwTokenConfig();
+builder.Configuration.GetSection("JwTokenConfig").Bind(jwTokenConfig);
+builder.Services.AddSingleton(jwTokenConfig);
+builder.Services.AddScoped<IJwTokenService, JwTokenService>();
 
 builder.Services.AddControllers().AddFluentValidation(fv =>
         fv.RegisterValidatorsFromAssemblyContaining<CreateUserCommandValidator>());
@@ -32,6 +43,12 @@ builder.Services.AddControllers().AddFluentValidation(fv =>
 builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("Default")));
 
+builder.Services
+    .AddAuthentication()
+    .AddBearerToken();
+
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -40,9 +57,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseRouting();
+    app.UseAuthorization();
     app.UseEndpoints(endpoints =>
     {
-        endpoints.MapControllers(); // Map controllers to endpoints
+        endpoints.MapControllers();
     });
 }
 
@@ -68,6 +86,23 @@ app.MapGet("/weatherforecast", () =>
     })
     .WithName("GetWeatherForecast")
     .WithOpenApi();
+
+app.MapGet("/login", (string username) =>
+{
+    var claimsPrincipal = new ClaimsPrincipal(
+        new ClaimsIdentity(
+            new[] { new Claim(ClaimTypes.Name, username) },
+            BearerTokenDefaults.AuthenticationScheme
+        )
+    );
+    return Results.SignIn(claimsPrincipal);
+});
+
+app.MapGet("/user", (ClaimsPrincipal user) =>
+    {
+        return Results.Ok($"Bem-Vindo {user.Identity.Name}!");
+    })
+    .RequireAuthorization();
 
 app.Run();
 

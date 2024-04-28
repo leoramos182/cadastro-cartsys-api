@@ -3,6 +3,7 @@
 public struct UserMessages
 {
     public static string NotFound => "User not found";
+    public static string InvalidCredentials => "Invalid User";
 
     public struct Name
     {

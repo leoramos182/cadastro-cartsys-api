@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CadastroCartsys.Api;
 using CadastroCartsys.Domain.Contracts;
+using Microsoft.AspNetCore.Identity;
 
 namespace CadastroCartsys.Domain.Entities;
 

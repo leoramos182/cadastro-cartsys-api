@@ -2,6 +2,7 @@
 using CadastroCartsys.Domain.Users;
 using CadastroCartsys.Domain.Users.Commands;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CadastroCartsys.Api.Controllers;
@@ -9,6 +10,7 @@ namespace CadastroCartsys.Api.Controllers;
 
 [Route("api/users")]
 [ApiController]
+[Authorize]
 public class UsersController: BaseApiController
 {
     private readonly IMediator _mediator;
