@@ -11,3 +11,7 @@
 * Criado entidades, repositorios de suporte
 * Criação do repositorio e controller da entidade user
 * Finalizado CRUD para a entidade User
+
+## Informações para rodar o projeto
+* string de conexao no appsettings.json
+* User seed -> email: user@teste.com.br senha: 123456
