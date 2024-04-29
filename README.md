@@ -4,6 +4,8 @@
 * Aplicação web utilizando Dotnet Core 8 MVC usando conceitos de DDD e padrão CQRS no Backend
 * Mediator
 * Fluent Validator
+* EntityFramework
+* Migrations
 * Banco de dados Sqlserver
 
 ## Avanço da aplicação
