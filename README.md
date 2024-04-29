@@ -16,3 +16,5 @@
 ## Informações para rodar o projeto
 * string de conexao no appsettings.json
 * User seed -> email: user@teste.com.br senha: 123456
+* Caso necessário, um dump do banco de dados usado em dev
+ https://we.tl/t-LiunrOXeKa Acesso até 06 Maio 2024
