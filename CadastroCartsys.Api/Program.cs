@@ -1,24 +1,43 @@
 using System.Security.Claims;
+using System.Text;
 using CadastroCartsys.Api;
 using CadastroCartsys.Crosscutting.Config;
 using CadastroCartsys.Data;
 using CadastroCartsys.Data.Repositories;
-using CadastroCartsys.Domain.Contracts;
 using CadastroCartsys.Domain.Users;
 using CadastroCartsys.Domain.Users.Commands.Handlers;
 using CadastroCartsys.Domain.Users.Validators;
-using CadastroCartsys.Infra.Services;
 using FluentValidation.AspNetCore;
-using Jwks.Manager.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.BearerToken;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
+
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddAuthentication(opt =>
+{
+    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = configuration["Jwt:Issuer"],
+        ValidAudience = configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+    };
+});
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
@@ -27,11 +46,11 @@ builder.Services.AddMediatR(config =>
 {
     config.RegisterServicesFromAssemblyContaining<UserCommandHandler>();
 });
+
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 var jwTokenConfig = new JwTokenConfig();
 builder.Configuration.GetSection("JwTokenConfig").Bind(jwTokenConfig);
 builder.Services.AddSingleton(jwTokenConfig);
-builder.Services.AddScoped<IJwTokenService, JwTokenService>();
 
 builder.Services.AddControllers().AddFluentValidation(fv =>
         fv.RegisterValidatorsFromAssemblyContaining<CreateUserCommandValidator>());
@@ -67,6 +86,7 @@ if (app.Environment.IsDevelopment())
     app.UseCors("AllowAngularClient");
     app.UseRouting();
     app.UseAuthorization();
+    app.UseAuthentication();
     app.UseEndpoints(endpoints =>
     {
         endpoints.MapControllers();
@@ -81,32 +101,6 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
-
-app.MapGet("/login", (string username) =>
-{
-    var claimsPrincipal = new ClaimsPrincipal(
-        new ClaimsIdentity(
-            new[] { new Claim(ClaimTypes.Name, username) },
-            BearerTokenDefaults.AuthenticationScheme
-        )
-    );
-    return Results.SignIn(claimsPrincipal);
-});
-
 app.MapGet("/user", (ClaimsPrincipal user) =>
     {
         return Results.Ok($"Bem-Vindo {user.Identity.Name}!");
@@ -114,8 +108,3 @@ app.MapGet("/user", (ClaimsPrincipal user) =>
     .RequireAuthorization();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

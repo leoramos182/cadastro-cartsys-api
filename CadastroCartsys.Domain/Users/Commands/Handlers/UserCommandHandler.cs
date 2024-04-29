@@ -1,7 +1,5 @@
 ﻿using CadastroCartsys.Crosscutting.Exceptions;
 using CadastroCartsys.Crosscutting.Messages;
-using CadastroCartsys.Crosscutting.Notifications;
-using CadastroCartsys.Crosscutting.Results;
 using CadastroCartsys.Crosscutting.Utils;
 using CadastroCartsys.Domain.Entities;
 using CadastroCartsys.Domain.Projections;

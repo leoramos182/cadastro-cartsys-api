@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.4" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.4" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
@@ -21,6 +21,12 @@
       <ProjectReference Include="..\CadastroCartsys.Data\CadastroCartsys.Data.csproj" />
       <ProjectReference Include="..\CadastroCartsys.Domain\CadastroCartsys.Domain.csproj" />
       <ProjectReference Include="..\CadastroCartsys.Infra\CadastroCartsys.Infra.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="System.Configuration.ConfigurationManager">
+        <HintPath>bin\Debug\net8.0\System.Configuration.ConfigurationManager.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

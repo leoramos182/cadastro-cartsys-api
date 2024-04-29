@@ -1,15 +1,14 @@
-﻿using System.Net;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using CadastroCartsys.Crosscutting.Exceptions;
 using CadastroCartsys.Crosscutting.Messages;
-using CadastroCartsys.Crosscutting.Notifications;
-using CadastroCartsys.Crosscutting.Results;
+using CadastroCartsys.Crosscutting.Models;
 using CadastroCartsys.Crosscutting.Utils;
-using CadastroCartsys.Domain.Contracts;
 using CadastroCartsys.Domain.Users;
-using CadastroCartsys.Domain.Users.Commands;
-using CadastroCartsys.Domain.Users.Results;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CadastroCartsys.Api.Controllers;
 
@@ -18,40 +17,42 @@ public class AuthController: BaseApiController
 {
     private readonly IMediator _mediator;
     private readonly IUsersRepository _usersRepository;
+    private readonly IConfiguration _configuration;
 
-    public AuthController(IMediator mediator, IUsersRepository usersRepository)
+    public AuthController(IMediator mediator,
+        IUsersRepository usersRepository,
+        IConfiguration configuration)
     {
         _mediator = mediator;
         _usersRepository = usersRepository;
+        _configuration = configuration;
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Post( [FromBody] AuthenticateUser command,
-        [FromServices] IJwTokenService tokenService)
+    [HttpPost("login")]
+    public async Task<IActionResult> Post( [FromBody] LoginViewModel  command)
     {
-        if (command == null) return UnprocessableEntity(EnvelopResult.Fail(new[] {new Notification("Invalid Entity")}));
-
         var user = await _usersRepository.FindByEmailAsync(command.Email);
 
-        if (user == null)
-            throw new DomainException(UserMessages.InvalidCredentials);
+        if (user is null)
+            return BadRequest(UserMessages.Email.InvalidEMail);
 
         if (!user.Active)
-            throw new DomainException(UserMessages.InvalidCredentials);
+            return BadRequest(UserMessages.Active.DeactivatedUser);
 
         if (!PasswordUtils.Check(user.Password, command.Password))
-            throw new DomainException(UserMessages.InvalidCredentials);
+            return BadRequest(UserMessages.Password.WrongPassword);
 
-        var result = new AuthenticateUserResult();
-
-        result.User = new SessionUser(
-            id: user.Id,
-            email: user.Email,
-            name: user.Name
-        );
-
-        tokenService.Generate(result.User.WriteClaimsIdentity(), ref result);
-
-        return OkResponse(result);
+        var key = Base64UrlEncoder.DecodeBytes(_configuration["Jwt:Key"]);
+        var _secretKey = new SymmetricSecurityKey(key);
+        var _issuer = _configuration["Jwt:Issuer"];
+        var _audience = _configuration["Jwt:Audience"];
+        var signinCredentials = new SigningCredentials(_secretKey, SecurityAlgorithms.HmacSha256);
+        var tokeOptions = new JwtSecurityToken(
+            issuer : _issuer,
+            audience: _audience,
+            expires: DateTime.Now.AddHours(24),
+            signingCredentials: signinCredentials);
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
+        return Ok(new { Token = tokenString });
     }
 }

@@ -19,9 +19,15 @@ public struct UserMessages
 
     }
 
+    public struct Active
+    {
+        public static string DeactivatedUser => "User is Not Active";
+    }
+
     public struct Password
     {
         public static string EmptyPassword => "Password is required";
+        public static string WrongPassword => "Wrong Password";
 
     }
 }
