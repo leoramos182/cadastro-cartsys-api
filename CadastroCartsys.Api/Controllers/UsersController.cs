@@ -33,7 +33,7 @@ public class UsersController: BaseApiController
             : OkResponse(user.ToVm()));
     }
 
-    [HttpGet,Authorize]
+    [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         var user = await _userRepository.GetAllUsers();
