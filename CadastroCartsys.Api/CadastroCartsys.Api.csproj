@@ -18,6 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\CadastroCartsys.Api.Infra\CadastroCartsys.Api.Infra.csproj" />
       <ProjectReference Include="..\CadastroCartsys.Data\CadastroCartsys.Data.csproj" />
       <ProjectReference Include="..\CadastroCartsys.Domain\CadastroCartsys.Domain.csproj" />
       <ProjectReference Include="..\CadastroCartsys.Infra\CadastroCartsys.Infra.csproj" />

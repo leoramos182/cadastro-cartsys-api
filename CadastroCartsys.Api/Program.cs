@@ -1,6 +1,8 @@
 using System.Security.Claims;
 using System.Text;
 using CadastroCartsys.Api;
+using CadastroCartsys.Api.Infra.Contracts;
+using CadastroCartsys.Api.Infra.Services;
 using CadastroCartsys.Crosscutting.Config;
 using CadastroCartsys.Data;
 using CadastroCartsys.Data.Repositories;
@@ -9,7 +11,6 @@ using CadastroCartsys.Domain.Users.Commands.Handlers;
 using CadastroCartsys.Domain.Users.Validators;
 using FluentValidation.AspNetCore;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -42,6 +43,7 @@ builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IMediator, Mediator>();
+builder.Services.AddScoped<IGenerateTokenService, GenerateTokenService>();
 builder.Services.AddMediatR(config =>
 {
     config.RegisterServicesFromAssemblyContaining<UserCommandHandler>();

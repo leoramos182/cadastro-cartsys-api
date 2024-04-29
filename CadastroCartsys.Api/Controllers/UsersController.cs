@@ -1,7 +1,7 @@
 ﻿using CadastroCartsys.Domain.Projections;
 using CadastroCartsys.Domain.Users;
 using CadastroCartsys.Domain.Users.Commands;
-using CadastroCartsys.Domain.Users.Queries;
+using CadastroCartsys.Domain.Users.Filters;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,9 +41,9 @@ public class UsersController: BaseApiController
     }
 
     [HttpGet("search")]
-    public async Task<IActionResult> Search([FromQuery] SearchUsersQuery query)
+    public async Task<IActionResult> Search([FromQuery] SearchUsersFilters filters)
     {
-        var users = await _userRepository.Filter(query);
+        var users = await _userRepository.Filter(filters);
         return await Task.FromResult(OkResponse(users.ToVm()));
     }
 

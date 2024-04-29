@@ -3,7 +3,7 @@ using CadastroCartsys.Crosscutting.Utils;
 using CadastroCartsys.Data.Persistence;
 using CadastroCartsys.Domain.Entities;
 using CadastroCartsys.Domain.Users;
-using CadastroCartsys.Domain.Users.Queries;
+using CadastroCartsys.Domain.Users.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -33,7 +33,7 @@ public class UsersRepository: BaseRepository<User, Guid>, IUsersRepository
     public Task<User> FindByEmailAsync(string email) =>
         _dataContext.Set<User>().FirstOrDefaultAsync(x => x.Email == email);
 
-    public async Task<List<User>> Filter(SearchUsersQuery filter)
+    public async Task<List<User>> Filter(SearchUsersFilters filter)
     {
         var predicate = PredicateBuilder.True<User>();
 

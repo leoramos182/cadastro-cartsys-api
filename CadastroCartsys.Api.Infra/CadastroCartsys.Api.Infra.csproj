@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CadastroCartsys.Domain\CadastroCartsys.Domain.csproj" />
+      <ProjectReference Include="..\CadastroCartsys.Infra\CadastroCartsys.Infra.csproj" />
     </ItemGroup>
 
 </Project>
