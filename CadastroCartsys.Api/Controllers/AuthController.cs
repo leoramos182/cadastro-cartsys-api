@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CadastroCartsys.Api.Controllers;
 
-[Route("api/auth")]
+[Route("auth")]
 public class AuthController: BaseApiController
 {
     private readonly IMediator _mediator;

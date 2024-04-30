@@ -37,17 +37,6 @@ public class UsersController: BaseApiController
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        // var pagedList = await _userRepository.GetPagedList(1, 3, "ASC");
-        //
-        // return Ok(new PagedList<UserVm>
-        // {
-        //     Page = pagedList.Page,
-        //     PageSize = pagedList.PageSize,
-        //     Order = pagedList.Order,
-        //     TotalPages = pagedList.TotalPages,
-        //     TotalItens = pagedList.TotalItens,
-        //     Itens = pagedList.Itens.Select(u => u.ToVm()).ToList()
-        // });
         var user = await _userRepository.GetAllUsers();
         return await Task.FromResult(OkResponse(user.ToVm()));
     }
