@@ -1,9 +1,10 @@
 ﻿using CadastroCartsys.Data;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CadastroCartsys.Api;
 
-public static class DatabaseConfig
+public static class DatabaseConfiguration
 {
     public static IApplicationBuilder AppUseMigrations(this IApplicationBuilder app)
     {

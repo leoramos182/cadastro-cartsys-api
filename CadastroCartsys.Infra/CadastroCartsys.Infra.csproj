@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\CadastroCartsys.Data\CadastroCartsys.Data.csproj" />
       <ProjectReference Include="..\CadastroCartsys.Domain\CadastroCartsys.Domain.csproj" />
     </ItemGroup>
 

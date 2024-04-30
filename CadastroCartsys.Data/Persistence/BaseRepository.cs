@@ -1,13 +1,15 @@
 ﻿using CadastroCartsys.Crosscutting.Exceptions;
 using CadastroCartsys.Crosscutting.Messages;
+using CadastroCartsys.Crosscutting.Models;
 using CadastroCartsys.Domain;
+using CadastroCartsys.Domain.Contracts;
 using CadastroCartsys.Domain.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace CadastroCartsys.Data.Persistence;
 
 public class BaseRepository<T, TId> : IBaseRepository<T, TId>
-    where T : class, IAggregateRoot<TId>
+    where T : class, IAggregateRoot<TId>, IBaseEntity
 {
     protected readonly DbContext _dbContext;
 
@@ -19,6 +21,31 @@ public class BaseRepository<T, TId> : IBaseRepository<T, TId>
     public virtual ValueTask<T?> FindAsync(TId id) =>
         _dbContext.Set<T>().FindAsync(id);
 
+    public async Task<PagedList<T>> GetPagedList(int page, int pageSize, string order)
+    {
+
+        var pages = _dbContext.Set<T>()
+            .Select(t => t);
+        var totalItens = pages.Count();
+        var totalPages = totalItens / pageSize;
+        pages = pages
+            .Skip((page-1) * pageSize)
+            .Take(pageSize);
+        var pageItens = await (order == "ASC"
+                ? pages.OrderBy(p => p.CreatedAt)
+                : pages.OrderByDescending(p => p.CreatedAt)
+            ).ToListAsync();
+
+        return new PagedList<T>
+        {
+            Page = page,
+            PageSize = pageSize,
+            Order = order,
+            TotalPages = totalPages,
+            TotalItens = totalItens,
+            Itens = pageItens
+        };
+    }
     public async Task<T> AddAsync(T entity)
     {
         await _dbContext.Set<T>().AddAsync(entity);
